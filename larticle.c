@@ -277,7 +277,7 @@ void Larticle_Collide(Larticle *larticle1, Larticle *larticle2)
         float v1y = (float)(larticle1->vy);
         float v2x = (float)(larticle2->vx);
         float v2y = (float)(larticle2->vy);
-        float dc = (0.1f);
+        float dc = (1.0f);
 	larticle1->vx = (float)(LARTICLE_COLISSION_MULTIPLYER*((v1x * cosY + v1y * sinY) * (m1 - m2) + 2.0f * m2 * (v2x * cosY + v2y * sinY)) * cosY / (m1 + m2) - (v1y * cosY - v1x * sinY) * sinY);
 	larticle1->vy = (float)(LARTICLE_COLISSION_MULTIPLYER*((v1x * cosY + v1y * sinY) * (m1 - m2) + 2.0f * m2 * (v2x * cosY + v2y * sinY)) * sinY / (m1 + m2) + (v1y * cosY - v1x * sinY) * cosY);
 	larticle2->vx = (float)(LARTICLE_COLISSION_MULTIPLYER*((v2x * cosY + v2y * sinY) * (m2 - m1) + 2.0f * m1 * (v1x * cosY + v1y * sinY)) * cosY / (m1 + m2) - (v2y * cosY - v2x * sinY) * sinY);

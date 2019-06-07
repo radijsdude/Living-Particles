@@ -21,6 +21,7 @@ void Draw_circle(SDL_Renderer *renderer, int x, int y, int r, int color_r, int c
 	if (0 <= x && x <= SCREEN_X && 0 <= y && y <= SCREEN_Y)
 	{
 		SDL_SetRenderDrawColor(renderer,color_r,color_g,color_b,color_a);
+		if (r < 2){r = 2;}
 		for (int i = 0; i < r; i++)
 		{
 			for (int j = 0; j*j<r*r-i*i;j++)

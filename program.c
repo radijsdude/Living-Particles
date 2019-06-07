@@ -37,9 +37,9 @@ int main( int argc, char* args[] )
 
 	rstop = clock();
 	int rtime = rstop - rstart;
-	//int seed = time(NULL);
-    //srand(seed);
-    int delay = 0;
+	int seed = time(NULL);
+	srand(seed);
+	int delay = 0;
 
 
 
@@ -56,8 +56,8 @@ int main( int argc, char* args[] )
 
 	while(running==1)
 	{
-		//clock_t start, stop;
-		//start = clock();
+		clock_t start, stop;
+		start = clock();
 
 
 		SDL_Event event;
@@ -147,9 +147,9 @@ int main( int argc, char* args[] )
 		Larticles_Blits(renderer,&larticles,scale,x,y);
 		SDL_RenderPresent(renderer);
 		SDL_Delay(delay);
-		//stop = clock();
-		//dt = (float)(stop - start);
-   		//printf("dt = %f\n amount = %d\n", dt,larticles.larticles_amount);
+		stop = clock();
+		dt = (float)(stop - start);
+   		printf("dt = %f\n amount = %d\n", dt,larticles.larticles_amount);
 	}
 
 
