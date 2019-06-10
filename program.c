@@ -1,6 +1,9 @@
+#ifndef LARTICLES_H_INCLUDED
 #include "larticles.c"
+#endif
+#ifndef VISUAL_H_INCLUDED
 #include "visual.c"
-
+#endif
 void Larticles_Blits(SDL_Renderer *renderer, Larticles *larticles, float scale, float x, float y);
 
 void Larticles_Blits(SDL_Renderer *renderer, Larticles *larticles, float scale, float x, float y)
@@ -40,6 +43,7 @@ int main( int argc, char* args[] )
 	int seed = time(NULL);
 	srand(seed);
 	int delay = 0;
+	int fullscreen = 0;
 
 
 
@@ -47,12 +51,12 @@ int main( int argc, char* args[] )
 
 	float scale = (float)SCREEN_Y/((float)UNIVERSE_SIZE);
 	float beginscale = (float)SCREEN_Y/((float)UNIVERSE_SIZE);
-	float x = ((float)UNIVERSE_SIZE/4.0f);
+	float x = ((float)UNIVERSE_SIZE/2.0f - SCREEN_X/2);
 	float y = 0.0f;
 	float dt = 1000.0f;
 
 	int running = 1;
-	int doe = 0;
+	int doe = 1;
 
 	while(running==1)
 	{
@@ -120,16 +124,27 @@ int main( int argc, char* args[] )
 								delay -= 1;
 							}
 							break;
-                        case SDLK_1:
+                        			case SDLK_1:
 							if (doe == 0)
 							{
 								doe = 1;
 							}
 							else
-                            {
-                                doe = 0;
-                            }
+							    {
+								doe = 0;
+							    }
 							break;
+						case SDLK_f:
+						if (fullscreen == 0)
+							//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+							fullscreen = 1;
+						else
+						{
+							fullscreen = 0;
+						}
+						case SDLK_x:
+							Larticles_Doe(&larticles);
+
 					}
 
 			}
@@ -138,10 +153,10 @@ int main( int argc, char* args[] )
 
 
 		}
-        if (doe==1)
-        {
-            Larticles_Doe(&larticles);
-        }
+		if (doe==1)
+		{
+		    Larticles_Doe(&larticles);
+		}
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderClear(renderer);
 		Larticles_Blits(renderer,&larticles,scale,x,y);

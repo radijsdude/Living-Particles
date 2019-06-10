@@ -1,4 +1,6 @@
+#ifndef LARTICLE_H_INCLUDED
 #include "larticle.h"
+#endif
 
 void Larticle_Print(Larticle *larticle)
 {
@@ -136,10 +138,19 @@ float Larticle_Calculate(Larticle *larticle, int i)
 }
 void Larticle_Calculate_All(Larticle *larticle)
 {
-    for (int i=0; i< NEURONS_AMOUNT; i++)
-    {
-        Larticle_Calculate(larticle,i);
-    }
+	Larticle_Calculate(larticle,NEURON_MOVE_X);
+	Larticle_Calculate(larticle,NEURON_MOVE_Y);
+	Larticle_Calculate(larticle,NEURON_MOVE_ANGLE);
+	Larticle_Calculate(larticle,NEURON_ATTACK);
+	Larticle_Calculate(larticle,NEURON_EAT);
+	Larticle_Calculate(larticle,NEURON_GRAVITY);
+	Larticle_Calculate(larticle,NEURON_TANGENTIAL);
+	Larticle_Calculate(larticle,NEURON_SPLIT);
+	Larticle_Calculate(larticle,NEURON_STATE_1);
+	Larticle_Calculate(larticle,NEURON_STATE_2);
+	Larticle_Calculate(larticle,NEURON_STATE_3);
+	Larticle_Calculate(larticle,NEURON_OUT_1);
+	Larticle_Calculate(larticle,NEURON_OUT_2);
 }
 
 void Larticle_Correct(Larticle *larticle, int i)
@@ -161,7 +172,7 @@ void Larticle_Correct(Larticle *larticle, int i)
 
 void Larticle_Create_Connections(Larticle *larticle)
 {
-	int amount = ((int)rand()%LARTICLE_START_CONNECTIONS);
+	int amount = ((int)rand()%(LARTICLE_START_CONNECTIONS));
 	for (int i=0; i<amount; i++)
 	{
 		int t = 0;
@@ -266,9 +277,6 @@ void Larticle_Heridity(Larticle *larticle1, Larticle *larticle2)
 
 void Larticle_Collide(Larticle *larticle1, Larticle *larticle2)
 {
-	float anglespeed = (float)((larticle1->anglespeed - larticle2->anglespeed)/2.0);
-	larticle1->anglespeed = anglespeed;
-	larticle2->anglespeed = -anglespeed;
 	float m1 = (float)(larticle1->m);
         float m2 = (float)(larticle2->m);
         float cosY = (float)((larticle1->x - larticle2->x) / (larticle1->r + larticle2->r));

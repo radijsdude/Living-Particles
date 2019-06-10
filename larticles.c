@@ -1,6 +1,6 @@
-
+#ifndef LARTICLES_H_INCLUDED
 #include "larticles.h"
-
+#endif
 void Larticles_Initiate(Larticles *larticles)
 {
 	larticles->larticles_amount = -1;
@@ -152,7 +152,8 @@ void Larticles_Doe(Larticles *larticles)
 
 				if (larticles->larticles[i].state != 3 && larticles->larticles[i].state != 0)
 				{
-					larticles->larticles[i].health -= UNIVERSE_DAMAGE;
+					larticles->larticles[i].health -= UNIVERSE_DAMAGE * 
+					(float)larticles->larticles[i].connections_length/(float)NEURONS_CONNECTIONS;
 				}
 
 				larticles->larticles[i].vx += (1.0f/((float)LARTICLE_SPEED)*coss*
@@ -337,7 +338,7 @@ void Larticles_Doe(Larticles *larticles)
 				float sangle = atan2(larticles->larticles[i].y - UNIVERSE_SIZE / 2.0f, 
 				larticles->larticles[i].x - UNIVERSE_SIZE / 2.0f);
 				float langle = atan2(lsee.y - UNIVERSE_SIZE / 2.0f, lsee.x - UNIVERSE_SIZE / 2.0f);
-				larticles->larticles[i].potentials[NEURON_SEE_ORIENTATION] = sangle - langle;
+				larticles->larticles[i].potentials[NEURON_SEE_ORIENTATION] = langle;
 				larticles->larticles[i].potentials[NEURON_SENSE_ORIENTATION] = sangle;
 				larticles->larticles[i].potentials[NEURON_SEE_GRAVITY] = lsee.potentials[NEURON_SENSE_GRAVITY] - 
 				larticles->larticles[i].potentials[NEURON_SENSE_GRAVITY];
@@ -347,6 +348,7 @@ void Larticles_Doe(Larticles *larticles)
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_2] = (float)lsee.potentials[NEURON_STATE_2];
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_3] = (float)lsee.potentials[NEURON_STATE_3];
 				larticles->larticles[i].potentials[NEURON_SEE_ANGLE] = lsee.angle;
+				larticles->larticles[i].potentials[NEURON_SENSE_ANGLE] = larticles->larticles[i].angle;
 				larticles->larticles[i].potentials[NEURON_SEE_HEALTH] = lsee.health/(larticles->larticles[i].health + 1.0f);
 				larticles->larticles[i].potentials[NEURON_SEE] = 1.0f;
 

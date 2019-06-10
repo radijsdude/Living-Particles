@@ -1,7 +1,8 @@
 #ifndef LARTICLES_H_INCLUDED
 #define LARTICLES_H_INCLUDED
-
+#ifndef LARTICLE_H_INCLUDED
 #include "larticle.c"
+#endif
 typedef struct
 {
 	Larticle larticles[LARTICLES_MAX];
