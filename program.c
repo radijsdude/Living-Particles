@@ -15,7 +15,6 @@ void Larticles_Blits(SDL_Renderer *renderer, Larticles *larticles, float scale, 
 		(int)(larticles->larticles[i].color[1]),
 		(int)(larticles->larticles[i].color[2]), (int)(larticles->larticles[i].color[3]), 1);
 
-
 		SDL_SetRenderDrawColor(renderer,0,0,0,255);
 		SDL_RenderDrawLine(renderer, (int)((larticles->larticles[i].x+x) * scale), (int)((larticles->larticles[i].y+y) * scale),
 		(int)(((larticles->larticles[i].x+x) + larticles->larticles[i].r * cos(larticles->larticles[i].angle)) * scale),
@@ -111,7 +110,7 @@ int main( int argc, char* args[] )
 							y -= 20.0f;
 							break;
 						case SDLK_r:
-							x = 0.0f;
+							x = ((float)UNIVERSE_SIZE/2.0f - SCREEN_X/2);
 							y = 0.0f;
 							scale = beginscale;
 							break;

@@ -15,7 +15,7 @@ void Larticles_Initiate(Larticles *larticles)
 		p.vy = 0.0f;
 		p.ax = 0.0f;
 		p.ay = 0.0f;
-		p.color[0] = 255;
+		p.color[0] = 0;
 		p.color[1] = 0;
 		p.color[2] = 0;
 		p.color[3] = 255;
@@ -97,6 +97,7 @@ void Larticles_Doe(Larticles *larticles)
 				//larticles->larticles[i].potentials[NEURON_SENSE_ANGLE_SPEED] = larticles->larticles[i].anglespeed;
 
 				Larticle_Calculate_All(&larticles->larticles[i]);
+				
 				float smax = 0.0f;
 				larticles->larticles[i].state = 0;
 				if (larticles->larticles[i].potentials[NEURON_STATE_1] > smax)
@@ -156,10 +157,12 @@ void Larticles_Doe(Larticles *larticles)
 					(float)larticles->larticles[i].connections_length/(float)NEURONS_CONNECTIONS;
 				}
 
-				larticles->larticles[i].vx += (1.0f/((float)LARTICLE_SPEED)*coss*
-				(larticles->larticles[i].potentials[NEURON_MOVE_X] - 0.5f));
-				larticles->larticles[i].vy += (1.0f/((float)LARTICLE_SPEED)*sinn*
-				(larticles->larticles[i].potentials[NEURON_MOVE_Y] - 0.5f));
+				larticles->larticles[i].vx += (1.0f/((float)LARTICLE_SPEED)*(coss*
+				(larticles->larticles[i].potentials[NEURON_MOVE_X] - 0.5f) - sinn*
+				(larticles->larticles[i].potentials[NEURON_MOVE_Y] - 0.5f)));
+				larticles->larticles[i].vy += (1.0f/((float)LARTICLE_SPEED)*(coss*
+				(larticles->larticles[i].potentials[NEURON_MOVE_Y] - 0.5f) + sinn*
+				(larticles->larticles[i].potentials[NEURON_MOVE_X] - 0.5f)));
 				float cx = larticles->larticles[i].x - (float)UNIVERSE_SIZE / 2.0f;
 				float cy = larticles->larticles[i].y - (float)UNIVERSE_SIZE / 2.0f;
 				larticles->larticles[i].potentials[NEURON_SENSE_GRAVITY] = (cx*cx+cy*cy)/((float)UNIVERSE_SIZE);
@@ -198,7 +201,7 @@ void Larticles_Doe(Larticles *larticles)
 					p.vy = larticles->larticles[i].vy;
 					p.ax = 0.0f;
 					p.ay = 0.0f;
-					p.color[0] = 255;
+					p.color[0] = 0;
 					p.color[1] = 0;
 					p.color[2] = 0;
 					p.color[3] = 255;
@@ -237,8 +240,17 @@ void Larticles_Doe(Larticles *larticles)
 
 			//larticles->larticles[i].anglespeed *= (1.0f - 20.0f * UNIVERSE_FRICTION);
 			larticles->larticles[i].angle += (larticles->larticles[i].potentials[NEURON_MOVE_ANGLE] - 0.5f) * M_PI;//larticles->larticles[i].anglespeed;
+			if (larticles->larticles[i].angle >= M_PI)
+			{
+				larticles->larticles[i].angle = -M_PI;
+			}
+			if (larticles->larticles[i].angle < -M_PI)
+			{
+				larticles->larticles[i].angle = M_PI;
+			}
 			
 			float see_d = 0.0f;
+			float see_a = 0.0f;
 			int insight = 0;
 			float distance = (float)LARTICLE_VISUAL_RANGE;
 			Larticle lsee;
@@ -248,8 +260,8 @@ void Larticles_Doe(Larticles *larticles)
 				{
 					if (i!=j)
 					{
-						float dx = larticles->larticles[i].x - larticles->larticles[j].x;
-						float dy = larticles->larticles[i].y - larticles->larticles[j].y;
+						float dx = larticles->larticles[j].x - larticles->larticles[i].x;
+						float dy = larticles->larticles[j].y - larticles->larticles[i].y;
 						float dr = larticles->larticles[i].r + larticles->larticles[j].r;
 						float d = dx*dx + dy*dy;
 						if (d==0.0f)
@@ -262,21 +274,17 @@ void Larticles_Doe(Larticles *larticles)
 						}
 						if (d < LARTICLE_VISUAL_RANGE * LARTICLE_VISUAL_RANGE)
 						{
-							float lidx = larticles->larticles[i].x - (float)UNIVERSE_SIZE/2.0f;
-							float ljdx = larticles->larticles[j].x - (float)UNIVERSE_SIZE/2.0f;
-							float lidy = larticles->larticles[i].y - (float)UNIVERSE_SIZE/2.0f;
-							float ljdy = larticles->larticles[j].y - (float)UNIVERSE_SIZE/2.0f;
-							float ri = lidx * lidx + lidy * lidy;
-							float rj = ljdx * ljdx + ljdy * ljdy;
-							float drr = (ri - rj)*2.0f/((float)UNIVERSE_SIZE * d);
+							float drr = 1.0f/d;
+							float daa = (atan2(dy,dx) - larticles->larticles[i].angle) / d;
 							see_d += drr;
+							see_a += daa;
 
 							float D =(larticles->larticles[i].x - larticles->larticles[j].x) *
 							(larticles->larticles[i].y + sinn - larticles->larticles[j].y) -
 							(larticles->larticles[i].y - larticles->larticles[j].y) *
 							(larticles->larticles[i].x + coss - larticles->larticles[j].x);
-							float rr = larticles->larticles[j].r * larticles->larticles[j].r;
-							if (D * D < rr)
+							float rr = larticles->larticles[j].r + tan(LARTICLE_FOV) *  sqrt(d);
+							if (D * D < rr * rr)
 							{
 								float sign = 1;
 								if (sinn < 0.0f)
@@ -338,6 +346,7 @@ void Larticles_Doe(Larticles *larticles)
 				float sangle = atan2(larticles->larticles[i].y - UNIVERSE_SIZE / 2.0f, 
 				larticles->larticles[i].x - UNIVERSE_SIZE / 2.0f);
 				float langle = atan2(lsee.y - UNIVERSE_SIZE / 2.0f, lsee.x - UNIVERSE_SIZE / 2.0f);
+				float dangle = atan2(larticles->larticles[i].y - lsee.y, larticles->larticles[i].x - lsee.x);
 				larticles->larticles[i].potentials[NEURON_SEE_ORIENTATION] = langle;
 				larticles->larticles[i].potentials[NEURON_SENSE_ORIENTATION] = sangle;
 				larticles->larticles[i].potentials[NEURON_SEE_GRAVITY] = lsee.potentials[NEURON_SENSE_GRAVITY] - 
@@ -347,25 +356,28 @@ void Larticles_Doe(Larticles *larticles)
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_1] = (float)lsee.potentials[NEURON_STATE_1];
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_2] = (float)lsee.potentials[NEURON_STATE_2];
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_3] = (float)lsee.potentials[NEURON_STATE_3];
-				larticles->larticles[i].potentials[NEURON_SEE_ANGLE] = lsee.angle;
-				larticles->larticles[i].potentials[NEURON_SENSE_ANGLE] = larticles->larticles[i].angle;
+				larticles->larticles[i].potentials[NEURON_SEE_ANGLE] = dangle - larticles->larticles[i].angle;
+				larticles->larticles[i].potentials[NEURON_SENSE_ANGLE] = larticles->larticles[i].angle - langle;
 				larticles->larticles[i].potentials[NEURON_SEE_HEALTH] = lsee.health/(larticles->larticles[i].health + 1.0f);
 				larticles->larticles[i].potentials[NEURON_SEE] = 1.0f;
-
 			}
 			else
 			{
 				larticles->larticles[i].potentials[NEURON_SEE_ORIENTATION] = 0.0f;
+				larticles->larticles[i].potentials[NEURON_SENSE_ORIENTATION] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_GRAVITY] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_DISTANCE] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_1] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_2] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_STATE_3] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_ANGLE] = 0.0f;
+				larticles->larticles[i].potentials[NEURON_SENSE_ANGLE] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE_HEALTH] = 0.0f;
 				larticles->larticles[i].potentials[NEURON_SEE] = 0.0f;
 			}
+			
 			larticles->larticles[i].potentials[NEURON_FIELD_DISTANCE] = see_d;
+			larticles->larticles[i].potentials[NEURON_FIELD_ANGLE] = see_d;
 
 			float dv = larticles->larticles[i].vx*larticles->larticles[i].vx +
 			larticles->larticles[i].vy*larticles->larticles[i].vy;
